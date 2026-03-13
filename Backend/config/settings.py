@@ -13,10 +13,7 @@ class Settings(BaseSettings):
 
     APP_NAME: str = "Enigma"
 
-    """
-      Liest Konfigurationsparameter aus der Datei 'settings.env' (UTF-8).
-      Die Umgebungsvariablen müssen gesetzt sein, sonst schlägt der Start fehl.
-      """
+
 
     # ---------------------------
     # Auth Mode

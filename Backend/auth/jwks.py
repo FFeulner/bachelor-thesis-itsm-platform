@@ -15,7 +15,7 @@ from config.settings import settings
 logger = logging.getLogger("auth")   # Logging unter dem Logger-Namen "auth"
 
 _jwks_cache: Dict[str, Any] = {"jwks": None, "expires": None}
-_jwks_lock = asyncio.Lock()          # Asynchrones Lock, um parallele Reloads zu verhindern
+_jwks_lock = asyncio.Lock()
 
 async def load_jwks() -> Dict[str, Any]:
     now = datetime.now()

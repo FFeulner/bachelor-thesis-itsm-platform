@@ -8,10 +8,7 @@ from fastapi import Depends, HTTPException, status
 from .token import get_current_user, extract_roles
 
 def require_roles(*required_roles: str):
-    """
-    Factory-Funktion, um rollenbasierte Abhängigkeit zu erzeugen.
-    Beispiel: @Depends(require_roles("admin", "editor"))
-    """
+
     def role_dependency(user=Depends(get_current_user)):
         user_roles = extract_roles(user)
         if not any(role in user_roles for role in required_roles):

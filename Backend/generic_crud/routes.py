@@ -66,14 +66,7 @@ def _log_get_response(tag: str, data, *, max_items: int = 25, max_chars: int = 2
 
 # --- Helper für optionale Update-Validierung --------------------
 def empty_to_none(v):
-    """
-    Konvertiert "leere" Strings zu None:
-    - ""
-    - "null"
-    - "None"
-    (case-insensitive, Whitespace egal)
-    Alles andere bleibt unverändert.
-    """
+
     if isinstance(v, str):
         s = v.strip()
         if s == "" or s.lower() in {"null", "none"}:
@@ -92,10 +85,7 @@ def create_crud_router(
     # - "strict": ursprüngliches Verhalten
     soft_update_strategy: str = "convert_empty",
 ) -> APIRouter:
-    """
-    Erzeugt einen CRUD-Router für die gegebene ORM-Klasse.
-    Wichtiger Hinweis: Logik & API-Form bleiben unverändert; nur Eingaben werden defensiv validiert.
-    """
+
     router = APIRouter(
         prefix=prefix or f"/{orm_cls.__table__.name}",
         tags=tags or [orm_cls.__table__.name],
@@ -147,10 +137,7 @@ def create_crud_router(
         raise ValueError(f"Ungültiger Bool-Wert: {s!r}")
 
     def _cast_value_for_column(col, raw: str):
-        """
-        Defensive Typkonvertierung analog zu deiner bisherigen Logik,
-        aber mit präziseren Fehlermeldungen.
-        """
+
         t = col.type
         s = "" if raw is None else str(raw).strip()
         # UUID-Heuristik: Spaltenname ...RecID oder Typ enthält "uuid"
@@ -186,10 +173,7 @@ def create_crud_router(
         return x is None or (isinstance(x, str) and (x.strip() == "" or x.strip().lower() == "null"))
 
     def _to_int_or_default(value: Union[int, str, None], default: int) -> int:
-        """
-        Versucht value in int zu wandeln. Leere/blanke/'null'-Strings -> default.
-        Ungültige Werte -> default.
-        """
+
         if _is_blank(value):
             return default
         try:
@@ -456,12 +440,7 @@ def create_crud_router(
 
     @router.post("/", response_model=ResponseModel, status_code=201)
     def create_item(payload: CreateModel, db: Session = Depends(get_db), current_user=Depends(get_current_user)):
-        """
-        Kompatibilitätsmodus wie „alte“ Version:
-        - RecID/UUID-ähnliche PKs werden automatisch mit uuid4() befüllt.
-        - INT/AUTO_INCREMENT lässt die DB generieren.
-        - Saubere 400, falls PK weder generierbar noch von DB erzeugt wird.
-        """
+
         obj_data = payload.dict(exclude_unset=True)
 
         # PK ermitteln

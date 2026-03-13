@@ -47,22 +47,14 @@ _UUID_RX = re.compile(
 
 # ---- Hilfen ----------------------------------------------------
 def _safe_dir_from_folder(folder: Optional[str]) -> Path:
-    """
-    Nimmt 'folder' wie 'res/<uuid>' entgegen und gibt den absoluten Zielordner zurück.
-    Verhindert Path Traversal und erstellt den Ordner.
-    Zusätzlich: erzwingt Schema 'res/<UUID>'.
 
-    MINIMALE ERWEITERUNG:
-    - erlaubt jetzt zusätzlich 'res/misc' als Fallback.
-    """
     if not folder:
         return MEDIA_ROOT
 
     raw = folder.strip().lstrip("/\\")
     parts = [p for p in Path(raw).parts if p not in {"..", ".", ""}]
 
-    # Vorher: nur res/<UUID>
-    # Jetzt zusätzlich: res/misc erlauben
+
     if len(parts) != 2 or parts[0] != "res" or not (
         _UUID_RX.match(parts[1]) or parts[1] == "misc"
     ):
@@ -78,7 +70,7 @@ def _safe_dir_from_folder(folder: Optional[str]) -> Path:
     return target
 
 def _safe_dir_from_prefix(prefix: Optional[str], rec_id: Optional[str]) -> Path:
-    # Für Backwards-Compat, aber auch hier validieren
+
     p = (prefix or "res").strip()
     r = (rec_id or "").strip()
     if p != "res" or not _UUID_RX.match(r):
@@ -103,10 +95,10 @@ class UploadItem(BaseModel):
 @media_router.post("/upload")
 async def upload_files(
     request: Request,
-    # Client-kompatibel: entweder 'file' ODER 'files'
+
     file: Optional[UploadFile] = File(None),
     files: Optional[List[UploadFile]] = File(None),
-    # Flutter schickt den Zielordner als Formularfeld 'folder' (z. B. 'res/<RecID>')
+
     folder: Optional[str] = Form(None),
     # Backwards-Compat per Query
     prefix: Optional[str] = Query(None, description="Oberordner, z. B. 'res'"),
@@ -114,7 +106,7 @@ async def upload_files(
     # <<< der eingeloggte User ist bei Bedarf verfügbar: >>>
     current_user: dict = Depends(get_current_user),
 ):
-    # ——— Validierung: alte Struktur beibehalten, aber Stream danach resetten ———
+
     if file is not None:
         try:
             buf = io.BytesIO(await file.read())
@@ -132,7 +124,7 @@ async def upload_files(
             except ValueError as e:
                 raise HTTPException(status_code=400, detail=str(e))
 
-    # Zielordner wählen (bevorzugt 'folder', sonst prefix/rec_id) + validieren
+
     if folder:
         target_dir = _safe_dir_from_folder(folder)
     else:
@@ -162,13 +154,13 @@ async def upload_files(
         ctype = (f.content_type or "").lower()
         ext = Path(f.filename or "").suffix.lower()
 
-        # Falls Browser nur octet-stream/leer sendet -> aus Dateiname raten
+
         if ctype in ("", "application/octet-stream"):
             guessed, _ = guess_type(f.filename or "")
             if guessed:
                 ctype = guessed.lower()
 
-        # Erlauben, wenn (a) Prefix passt ODER (b) octet-stream + erlaubte Endung
+
         if not (
             any(ctype.startswith(p) for p in ALLOWED_MIME_PREFIX)
             or (ctype == "application/octet-stream" and ext in ALLOWED_EXTS)
@@ -178,7 +170,7 @@ async def upload_files(
                 detail=f"Nicht erlaubter Typ: {ctype or 'unbekannt'}"
             )
 
-        # Datei speichern
+
         safe_ext = ext if ext in ALLOWED_EXTS else Path(f.filename or "").suffix[:20]
         new_name = f"{uuid4().hex}{safe_ext}"
         abs_path = (target_dir / new_name).resolve()

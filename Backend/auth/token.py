@@ -15,12 +15,12 @@ from fastapi.security import OAuth2PasswordBearer
 from config.settings import settings
 from .jwks import get_public_key
 
-# Logger für Auth-Vorgänge
+
 logger = logging.getLogger("auth")
-# Logger für Audit-Events
+
 audit = logging.getLogger("audit")
 
-# FastAPI OAuth2-Schema (wird standardmäßig für get_current_user genutzt)
+
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 
@@ -28,11 +28,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 # Rollen extrahieren (Zitadel + Offline)
 # -------------------------
 def extract_roles(decoded: Dict[str, Any]) -> List[str]:
-    """
-    Unterstützt:
-      - Zitadel: Claim 'urn:zitadel:iam:org:project:roles' (Dict -> Keys sind Rollen)
-      - Offline: Claim 'roles' als Liste ["admin","user"]
-    """
+
     # Zitadel
     roles_claim = decoded.get("urn:zitadel:iam:org:project:roles", None)
     if isinstance(roles_claim, dict):
@@ -102,10 +98,7 @@ def _verify_offline_token(token: str) -> Dict[str, Any]:
 
 
 def _looks_like_hs256(token: str) -> bool:
-    """
-    Prüft am Header ob alg=HS256 ist.
-    Achtung: bei token="dev" knallt get_unverified_header -> dann False.
-    """
+
     try:
         hdr = jwt.get_unverified_header(token)
         alg = (hdr.get("alg") or "").upper()
@@ -115,13 +108,10 @@ def _looks_like_hs256(token: str) -> bool:
 
 
 # -------------------------
-# Zitadel Verify (wie vorher)
+# Zitadel Verify
 # -------------------------
 async def verify_token(token: str, access_token: str | None = None) -> Dict[str, Any]:
-    """
-    Verifiziert ein ID-Token (oder generisches Token) im Zitadel-Stil
-    ODER im Offline/Hybrid Modus auch Offline Tokens.
-    """
+
     mode = (settings.auth_mode or "zitadel").lower().strip()
 
     # Offline-only
@@ -195,9 +185,7 @@ async def verify_token(token: str, access_token: str | None = None) -> Dict[str,
 
 
 async def verify_access_token(token: str) -> dict:
-    """
-    Verifiziert Access Token (Zitadel) oder Offline im Hybrid/Offline Mode.
-    """
+
     mode = (settings.auth_mode or "zitadel").lower().strip()
 
     if mode == "offline":
@@ -223,9 +211,7 @@ async def verify_access_token(token: str) -> dict:
 
 
 async def verify_id_token(idt: str, access_token: str | None = None) -> dict:
-    """
-    Verifiziert ID Token (Zitadel) oder Offline im Hybrid/Offline Mode.
-    """
+
     mode = (settings.auth_mode or "zitadel").lower().strip()
 
     if mode == "offline":

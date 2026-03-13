@@ -12,16 +12,7 @@ import logging
 audit = logging.getLogger("audit")
 
 class AuditMiddleware(BaseHTTPMiddleware):
-    """
-    Middleware, die nur Auth-bezogene Requests (Pfad enthält "auth")
-    im Audit-Log (JSON) festhält.
-    Protokolliert:
-    - event: "auth_request"
-    - path: angeforderter URL-Pfad
-    - method: HTTP-Methode
-    - ip: Client-IP (request.client.host)
-    - status_code: HTTP-Status-Code der Antwort
-    """
+
     async def dispatch(self, request: Request, call_next):
         # Anfrage verarbeiten lassen und Response zurückbekommen
         response = await call_next(request)

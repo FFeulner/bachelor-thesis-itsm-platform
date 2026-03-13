@@ -17,7 +17,7 @@ class AktivitaetCreate(BaseModel):
     entity_recid: Optional[str] = None
     entity_table: Optional[str] = Field(None, max_length=36)
 
-    # 🔹 JSON-Key & Attribut heißen "firma_RecID"
+
     firma_RecID: Optional[str] = None
 
     _norm = field_validator(

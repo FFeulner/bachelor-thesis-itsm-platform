@@ -99,9 +99,9 @@ def rollback_change(
     try:
         old_value = json.loads(old_value)
     except Exception:
-        pass  # Fallback: old_value bleibt als String
+        pass
 
-    # Dynamisch die Primärschlüssel-Spalte der Zieltabelle holen
+
     try:
         pk_column = list(data_table.primary_key.columns)[0]
     except IndexError:
@@ -110,7 +110,7 @@ def rollback_change(
 
     logger.debug(f"Rollback: Setze {field}={old_value} in {table_name} wo {pk_column.key}={record_id}")
 
-    # Update-Anweisung zum Zurücksetzen der Änderung
+
     update_stmt = (
         update(data_table)
         .where(pk_column == record_id)
@@ -120,12 +120,12 @@ def rollback_change(
     with engine.begin() as data_conn:
         data_conn.execute(update_stmt)
 
-    # Neue Zeile im Audit-Log hinzufügen für das Rollback selbst
+
     rollback_entry = {
         "record_id": record_id,
         "action": "rollback",
         "field": field,
-        "old_value": change["new_value"],  # das, was überschrieben wurde
+        "old_value": change["new_value"],
         "new_value": old_value,
         "timestamp": datetime.utcnow(),
         "user": f"{current_user.get('name', 'unknown')} ({current_user.get('sub')})",

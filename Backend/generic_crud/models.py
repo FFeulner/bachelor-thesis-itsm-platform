@@ -81,16 +81,10 @@ Base.prepare()
 # Auto-Defaults & Allowed-Metadaten
 # ------------------------------------------------------------
 def _all_columns(table_name: str) -> Set[str]:
-    """Alle Spaltennamen der Tabelle (inkl. PK)."""
     return {c.name for c in metadata.tables[table_name].columns}
 
 def _compute_write_columns(table_name: str, read_columns: Set[str]) -> Set[str]:
-    """
-    Auto-Write:
-      - nimmt alle nicht-PK Spalten,
-      - subtrahiert DEFAULT_WRITE_DENY und read_only_overrides,
-      - beschränkt auf lesbare Spalten (read_columns), falls vorhanden.
-    """
+
     table = metadata.tables[table_name]
     cols = {c.name for c in table.columns if not c.primary_key}
     per_table_ro = set(ALLOWED_TABLES.get(table_name, {}).get("read_only_overrides", set()))
@@ -111,9 +105,7 @@ for table_name in whitelist_tables:
     raw_sort = conf.get("sort")
     allowed_sort: Set[str] = set(raw_sort) if raw_sort is not None else set(allowed_read)
 
-    # WRITE:
-    #   - fehlt & AUTO_WRITE_ENABLED -> Auto-Write
-    #   - Set() (auch leer)         -> exakt dieses Set (leer = read-only)
+
     if conf.get("write") is None and AUTO_WRITE_ENABLED:
         allowed_write = _compute_write_columns(table_name, allowed_read)
     else:

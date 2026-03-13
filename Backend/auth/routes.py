@@ -36,11 +36,7 @@ class OfflineLoginPayload(BaseModel):
 
 @router.post("/offline/login", response_model=TokenResponse)
 async def offline_login(payload: OfflineLoginPayload):
-    """
-    Offline Login (für curl / FlutterFlow):
-      POST /api/auth/offline/login
-      { "email": "...", "sub": "...", "roles": ["admin"] }
-    """
+
     mode = (settings.auth_mode or "zitadel").lower().strip()
     if mode not in {"offline", "hybrid"}:
         raise HTTPException(status_code=404, detail="Offline login ist deaktiviert")
@@ -69,11 +65,7 @@ async def offline_login(payload: OfflineLoginPayload):
 
 @router.post("/callback", response_model=TokenResponse)
 async def auth_callback(payload: CodePayload):
-    """
-    Endpoint: /api/auth/callback
-    - Zitadel: tauscht Code gegen Tokens
-    - Offline: stubbt Tokens (damit man auch ohne Zitadel weiterkommt)
-    """
+
     mode = (settings.auth_mode or "zitadel").lower().strip()
 
     # Offline / Hybrid shortcut: wenn code="offline" (oder offline mode)
@@ -122,11 +114,7 @@ async def auth_callback(payload: CodePayload):
 
 @router.post("/refresh", response_model=TokenResponse)
 async def refresh_tokens(payload: RefreshPayload):
-    """
-    Endpoint: /api/auth/refresh
-    - Zitadel: refresh flow
-    - Offline: stubbt Tokens
-    """
+
     mode = (settings.auth_mode or "zitadel").lower().strip()
 
     if mode == "offline":
@@ -172,10 +160,7 @@ async def refresh_tokens(payload: RefreshPayload):
 
 @router.post("/verify-role", response_model=AuthValidationResponse)
 async def verify_role(payload: AuthValidationRequest):
-    """
-    Prüft ob required_role in den Rollen ist.
-    Funktioniert jetzt für Zitadel UND Offline.
-    """
+
     logger.info("Rollenprüfung gestartet")
 
     decoded = await verify_token(payload.id_token, access_token=payload.access_token)

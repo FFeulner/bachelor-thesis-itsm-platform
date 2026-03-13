@@ -31,12 +31,7 @@ async def _set_body(request: Request, body: bytes):
     request._receive = receive  # Body wieder verfügbar machen
 
 class RequestPayloadLoggerMiddleware(BaseHTTPMiddleware):
-    """
-    Loggt den JSON Request-Body bei DEBUG.
-    - Pufferung des Bodys (damit FastAPI ihn weiter validieren kann)
-    - Bei 422 werden Payload + Validierungsfehler geloggt
-    - Standardmäßig nur für Pfade unter /api/dynamic_crud/
-    """
+
     def __init__(self, app, include_prefix: str = "/api/dynamic_crud/"):
         super().__init__(app)
         self.include_prefix = include_prefix
@@ -64,7 +59,7 @@ class RequestPayloadLoggerMiddleware(BaseHTTPMiddleware):
                 except Exception:
                     logger.debug("REQ %s %s raw=%r", request.method, request.url.path, body[:2048])
 
-        # Weiterreichen, 422 abfangen zum Loggen
+
         try:
             response = await call_next(request)
             return response
@@ -85,5 +80,5 @@ class RequestPayloadLoggerMiddleware(BaseHTTPMiddleware):
                         (request.state.raw_body or b"")[:2048],
                         exc.errors(),
                     )
-            # Fehler wieder werfen, damit FastAPI korrekt 422 antwortet
+
             raise

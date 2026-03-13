@@ -17,13 +17,7 @@ logger = logging.getLogger("auth")   # Haupt-Logger für Auth-Operationen
 audit = logging.getLogger("audit")   # Logger für Audit-Ereignisse
 
 async def exchange_and_process_token(data: dict) -> TokenResponse:
-    """
-    Führt den Token-Austausch bei Zitadel durch.
-    Erwartetes data-Dict enthält mindestens:
-      - grant_type ("authorization_code" oder "refresh_token")
-      - Entsprechende Parameter (code, code_verifier, refresh_token, client_id usw.)
-    Danach wird das ID-Token validiert und die Rollen extrahiert.
-    """
+
     grant_type = data.get("grant_type", "unbekannt")
     preview = ""
     # Nur die ersten 6 Zeichen von Code/Refresh-Token für Logs verwenden

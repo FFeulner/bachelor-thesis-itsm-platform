@@ -4,14 +4,7 @@
 # Besonderheit: Dynamische Log-Level und stdout-Handler.
 # -------------------------------------------------------------------
 
-"""
-Zentrales Logging-Setup für die FastAPI-App.
 
-- Konsolen-Logging (stdout), optional JSON-Format
-- Optional rotierende Logdateien (server.log, audit.log) via ENV toggelbar
-- Idempotent (richtet Logger nur ein, wenn noch nicht konfiguriert)
-- Uvicorn-Logger propagieren an Root → einheitliche Ausgabe
-"""
 
 import logging
 import os

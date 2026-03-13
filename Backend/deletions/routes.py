@@ -26,7 +26,7 @@ def get_db():
         db.close()
 
 def _get_orm_cls_by_tabellenname(table_name: str):
-    # Base.classes ist ein Namespace; über getattr holen
+
     try:
         return getattr(Base.classes, table_name)
     except AttributeError:
@@ -41,7 +41,7 @@ def list_offene_markierungen(db: Session = Depends(get_db)):
     ).mappings().all()
     return [dict(r) for r in rows]
 
-# --- Approve: final löschen + in Audit-Log schreiben + Queue-Eintrag entfernen ---
+
 @router.post("/{queue_id}/approve", dependencies=[Depends(require_roles("admin"))])
 def approve_markierung(queue_id: str, db: Session = Depends(get_db), admin=Depends(require_roles("admin"))):
     item = db.execute(select(DeletionQueue).where(DeletionQueue.c.id == queue_id)).mappings().first()
@@ -54,25 +54,25 @@ def approve_markierung(queue_id: str, db: Session = Depends(get_db), admin=Depen
     if not orm_cls:
         raise HTTPException(400, detail=f"Tabelle '{item['tabellenname']}' ist nicht registriert.")
 
-    # Primärschlüssel-Spalte ermitteln
+
     pk_col = next(c for c in orm_cls.__table__.columns if c.primary_key)
 
-    # Snapshot fürs Audit
+
     try:
         snapshot = json.loads(item.get("snapshot_json") or "{}")
     except Exception:
         snapshot = {}
 
-    # Primärschlüssel-Spalte ermitteln
+
     pk_col = next(c for c in orm_cls.__table__.columns if c.primary_key)
 
-    # Snapshot fürs Audit
+
     try:
         snapshot = json.loads(item.get("snapshot_json") or "{}")
     except Exception:
         snapshot = {}
 
-    # Ziel-PK passend casten
+
     target_id = item["datensatz_id"]
     try:
         if pk_col.type.python_type is int:
@@ -80,10 +80,10 @@ def approve_markierung(queue_id: str, db: Session = Depends(get_db), admin=Depen
     except Exception:
         pass
 
-    # Finaler Hard Delete des Zieldatensatzes
+
     db.execute(sa_delete(orm_cls).where(getattr(orm_cls, pk_col.name) == target_id))
 
-    # Queue-Eintrag NICHT löschen, sondern Status setzen (Historie behalten)
+
     db.execute(
         update(DeletionQueue)
         .where(DeletionQueue.c.id == queue_id)
@@ -93,7 +93,7 @@ def approve_markierung(queue_id: str, db: Session = Depends(get_db), admin=Depen
     return {"status": "gelöscht", "tabellenname": item["tabellenname"], "datensatz_id": item["datensatz_id"]}
 
 
-# --- Reject: behalten + ins Audit-Log schreiben + Queue-Eintrag entfernen ---
+
 @router.post("/{queue_id}/reject", dependencies=[Depends(require_roles("admin"))])
 def reject_markierung(queue_id: str, db: Session = Depends(get_db), admin=Depends(require_roles("admin"))):
     item = db.execute(select(DeletionQueue).where(DeletionQueue.c.id == queue_id)).mappings().first()
@@ -108,13 +108,13 @@ def reject_markierung(queue_id: str, db: Session = Depends(get_db), admin=Depend
     except Exception:
         snapshot = {}
 
-    # Queue-Eintrag ENTFERNEN
+
     res = db.execute(sa_delete(DeletionQueue).where(DeletionQueue.c.id == queue_id))
     if res.rowcount == 0:
         raise HTTPException(404, detail="Markierung nicht gefunden oder bereits verarbeitet.")
     db.commit()
 
-    # Audit-Log: Deletionsantrag abgelehnt
+
     write_change_entry(
         table_name=item["tabellenname"],
         record_id=item["datensatz_id"],
