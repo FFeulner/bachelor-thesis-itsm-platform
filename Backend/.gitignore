@@ -17,6 +17,7 @@ htmlcov/
 .mypy_cache/
 .pyre/
 .dmypy.json
+.venv
 
 # --- IDE/Editor ---
 .vscode/
@@ -56,3 +57,4 @@ secrets/
 *.pem
 *.key
 *.crt
+/.venv/

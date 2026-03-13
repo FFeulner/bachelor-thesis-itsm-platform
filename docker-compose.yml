@@ -1,0 +1,72 @@
+services:
+  db:
+    image: mariadb:11.4
+    container_name: enigma-db
+    restart: unless-stopped
+    environment:
+      MARIADB_ROOT_PASSWORD: root
+      MARIADB_DATABASE: bachelordb
+      MARIADB_USER: enigma
+      MARIADB_PASSWORD: enigma
+    ports:
+      - "3306:3306"
+    volumes:
+      - mariadb_data:/var/lib/mysql
+      - ./Database/init/00-create-changes-db.sql:/docker-entrypoint-initdb.d/00-create-changes-db.sql:ro
+      - ./Database/bachelor-thesis-itsm-platform.sql:/docker-entrypoint-initdb.d/10-bachelordb-seed.sql:ro
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "mariadb-admin ping -h 127.0.0.1 -uroot -p$$MARIADB_ROOT_PASSWORD --silent"
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
+
+  backend:
+    build:
+      context: ./Backend
+      dockerfile: Dockerfile
+    container_name: enigma-backend
+    restart: unless-stopped
+    env_file:
+      - ./Backend/settings.docker.env
+    ports:
+      - "8000:8000"
+    volumes:
+      - backend_logs:/app/logs
+      - backend_media:/app/media
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/livez')"
+        ]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 40s
+
+  frontend:
+    build:
+      context: ./Frontend/ff_bachelor_arbeit
+      dockerfile: Dockerfile
+    container_name: enigma-frontend
+    restart: unless-stopped
+    ports:
+      - "58726:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+
+volumes:
+  mariadb_data:
+  backend_logs:
+  backend_media:

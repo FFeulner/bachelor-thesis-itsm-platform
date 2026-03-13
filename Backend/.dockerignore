@@ -20,8 +20,11 @@ logs
 *.sqlite3
 .env
 .env.*
+settings.env
+settings.local.env
 secrets
 *.pem
 *.key
 *.crt
 docker-data
+Mail_Handler/office.env

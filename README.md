@@ -45,6 +45,42 @@ Wichtige Ordner im Projekt:
 
 ---
 
+## Docker-Schnellstart (Backend + DB + Frontend)
+
+Im Projekt liegt jetzt ein kompletter Docker-Stack (`docker-compose.yml`) mit:
+
+- `db` (MariaDB inkl. SQL-Import aus `Database/bachelor-thesis-itsm-platform.sql`)
+- `backend` (FastAPI auf Port `8000`)
+- `frontend` (Flutter-Web via Nginx auf Port `58726`)
+
+### Starten
+
+```bash
+docker compose up --build
+```
+
+Beim ersten Start kann der Datenbankimport etwas dauern.
+
+### URLs
+
+- Frontend: `http://localhost:58726`
+- Backend: `http://localhost:8000`
+- Health: `http://localhost:8000/livez` und `http://localhost:8000/readyz`
+
+### Wichtige Konfiguration
+
+- Docker-Settings fÃ¼r das Backend liegen in `Backend/settings.docker.env`.
+- StandardmÃ¤ÃŸig lÃ¤uft Docker im `auth_mode=offline`.
+- DB-Zugriffe laufen im Compose-Netz gegen Hostname `db`.
+
+### ZurÃ¼cksetzen (inkl. DB-Daten)
+
+```bash
+docker compose down -v
+```
+
+---
+
 ## 2. Datenbanken anlegen
 
 Für das lokale Setup werden zwei Datenbanken benötigt:
