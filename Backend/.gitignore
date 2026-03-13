@@ -6,10 +6,6 @@ __pycache__/
 *.pyo
 *.egg-info/
 .eggs/
-.env
-.env.*
-.venv/
-venv/
 pip-wheel-metadata/
 dist/
 build/
