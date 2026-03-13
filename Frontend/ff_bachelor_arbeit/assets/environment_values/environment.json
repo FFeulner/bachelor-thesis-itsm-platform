@@ -1,0 +1,4 @@
+{
+  "apiURl": "http://127.0.0.1:8000",
+"zitadelRedirectUri": "http://localhost:58726/auth-redirect"
+}

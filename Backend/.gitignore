@@ -1,0 +1,62 @@
+# --- Python / FastAPI ---
+__pycache__/
+*.py[cod]
+*.so
+*.pyd
+*.pyo
+*.egg-info/
+.eggs/
+.env
+.env.*
+.venv/
+venv/
+pip-wheel-metadata/
+dist/
+build/
+wheels/
+coverage.xml
+htmlcov/
+.coverage*
+.pytest_cache/
+.mypy_cache/
+.pyre/
+.dmypy.json
+
+# --- IDE/Editor ---
+.vscode/
+.idea/
+*.iml
+
+# --- OS ---
+.DS_Store
+Thumbs.db
+
+# --- Logs & runtime ---
+logs/
+*.log
+*.sqlite3
+instance/
+media/tmp/
+
+# --- Test & tooling ---
+.tox/
+.nox/
+pytestdebug.log
+
+# --- Node (falls Frontend im Monorepo) ---
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-lock.yaml
+
+# --- Docker ---
+docker-data/
+*.pid
+
+# --- Project specific ---
+# falls du Beispieldaten/Secrets nutzt:
+secrets/
+*.pem
+*.key
+*.crt

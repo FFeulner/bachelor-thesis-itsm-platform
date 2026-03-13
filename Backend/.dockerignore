@@ -1,0 +1,27 @@
+# keep image lean & safe
+**/.git
+**/.gitignore
+**/.gitattributes
+**/.github
+**/.venv
+**/venv
+**/.idea
+**/.vscode
+**/__pycache__
+**/.pytest_cache
+**/.mypy_cache
+**/.pyre
+**/node_modules
+dist
+build
+wheels
+logs
+*.log
+*.sqlite3
+.env
+.env.*
+secrets
+*.pem
+*.key
+*.crt
+docker-data

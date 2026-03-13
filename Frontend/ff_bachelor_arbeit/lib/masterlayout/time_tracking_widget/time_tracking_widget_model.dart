@@ -1,0 +1,31 @@
+import '/flutter_flow/flutter_flow_theme.dart';
+import '/flutter_flow/flutter_flow_timer.dart';
+import '/flutter_flow/flutter_flow_util.dart';
+import '/flutter_flow/flutter_flow_widgets.dart';
+import 'dart:ui';
+import 'package:stop_watch_timer/stop_watch_timer.dart';
+import 'time_tracking_widget_widget.dart' show TimeTrackingWidgetWidget;
+import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+
+class TimeTrackingWidgetModel
+    extends FlutterFlowModel<TimeTrackingWidgetWidget> {
+  ///  State fields for stateful widgets in this component.
+
+  // State field(s) for TimerUP widget.
+  final timerUPInitialTimeMs = 0;
+  int timerUPMilliseconds = 0;
+  String timerUPValue = StopWatchTimer.getDisplayTime(0, milliSecond: false);
+  FlutterFlowTimerController timerUPController =
+      FlutterFlowTimerController(StopWatchTimer(mode: StopWatchMode.countUp));
+
+  @override
+  void initState(BuildContext context) {}
+
+  @override
+  void dispose() {
+    timerUPController.dispose();
+  }
+}
