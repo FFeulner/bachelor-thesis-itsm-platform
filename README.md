@@ -1,6 +1,5 @@
 # Enigma Docker Deploy
 
-Diese Anleitung ist fuer Leser der Bachelorarbeit und beschreibt nur den Start per Docker.
 
 ## 1. Projekt als ZIP laden und entpacken
 
