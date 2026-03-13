@@ -1,0 +1,24 @@
+# Virtualenv & Python
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+
+# Logs & runtime
+logs/
+*.log
+
+# Env/Secrets
+.settings/
+.env
+settings.env
+
+# IDE/OS
+.idea/
+.vscode/
+.DS_Store
+
+# Builds
+dist/
+build/
+
